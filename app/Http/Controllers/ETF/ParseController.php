@@ -28,6 +28,11 @@ class ParseController extends Controller
     private $etfInfo = '';
 
     /**
+     * @var string
+     */
+    private $etfHoldings = '';
+
+    /**
      *
      */
     public function index(ETF $ETF)
@@ -59,17 +64,38 @@ class ParseController extends Controller
         $sectorsArr = [];
 
         $this->getPermissionCookies();
+        //ak chatvale eg linkia gaparsuli
         $this->getCurrentETF(config('etf.parseLinks')['currentETFLink'] . 'CWI');
         $dom = new \DOMDocument('1.0');
-        @$dom->loadHTML(htmlspecialchars_decode($this->etfInfo));
+        //ak dabrunebuli html i ra ro amovigo ragaceebi
+        @$dom->loadHTML(html_entity_decode($this->etfInfo));
         $xpath = new \DOMXPath($dom);
-        $etfName = $xpath->query('//h1');
-        $etfInfo = $xpath->query('//div[@class="keyfeatures"]');
-//        [//td[@class="data"] and //td[@class="label"] and //td[@class="weight"]]
-        $etfHoldingsLabels = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="label"]');
-        $etfHoldingsWeights = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="weight"]');
-        $etfSectors = $xpath->query('//div[@id="holdings"][1]/descendant::table[last()]//td');
 
+        //akedan vigeb mag yleobas mara zustad egre ar mibrunebs
+        $sectorWeights = $xpath->query('//div[@id="chart_SectorsAllocChart"]/following-sibling::div[@style="display: none"]');
+
+        $html = $this->etfInfo;
+        $xml = get_string_between($html, '<div style="display: none">', '</div>');
+
+        $arr = [];
+        if ($xml) {
+            foreach ($xml as $string) {
+                $string = html_entity_decode($string);
+                $xmlArray = new \SimpleXMLElement($string);
+                if ($xmlArray->code == 'FUND_SECTOR_ALLOCATION') {
+                    $arr[] = $xmlArray;
+                }
+            }
+        }
+        dump($arr);
+        die();
+
+        //        $etfName = $xpath->query('//h1');
+//        $etfInfo = $xpath->query('//div[@class="keyfeatures"]');
+//        [//td[@class="data"] and //td[@class="label"] and //td[@class="weight"]]
+//        $etfHoldingsLabels = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="label"]');
+//        $etfHoldingsWeights = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="weight"]');
+//        $etfSectors = $xpath->query('//div[@id="holdings"][1]/descendant::table[last()]//td');
         $tmpSectArr = [];
         if ($etfSectors) {
             $i = 1;
@@ -78,12 +104,13 @@ class ParseController extends Controller
                 $i++;
             }
         }
+
+
         for ($i = 1; $i <= count($tmpSectArr); $i++) {
             if ($i % 2 == 0) {
                 $sectorsArr += [$tmpSectArr[$i - 1] => $tmpSectArr[$i]];
             }
         }
-
 
 
         if ($etfName) {
@@ -110,7 +137,8 @@ class ParseController extends Controller
                 $i++;
             }
         }
-        dump($holdings);
+//        dump($holdings);
+//        dump($sectorsArr);
 
     }
 
@@ -118,9 +146,34 @@ class ParseController extends Controller
     /**
      * @param $url
      */
-    private
-    function getCurrentETF($url)
+    private function getCurrentETF($url)
     {
+        $curl = curl_init();
+        $curlOpts = array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_VERBOSE => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_POSTFIELDS => "",
+            CURLOPT_COOKIESESSION => 96,
+            CURLOPT_HTTPHEADER => array_merge(array(
+                "cache-control: no-cache"
+            ), $this->brCookies),
+        );
+        curl_setopt_array($curl, $curlOpts);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            echo "cURL Error :" . $err;
+        } else {
+            $this->etfInfo = $response;
+        }
         $curl = curl_init();
         $curlOpts = array(
             CURLOPT_URL => $url,
