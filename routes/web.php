@@ -20,5 +20,6 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::post('/parse/etf','ETF\ETFController@parse')->name('etf.parse');
+    Route::get('/parse/etf', 'ETF\ParseController@index')->name('etf.parse');
+    Route::get('/get/etf/info', 'ETF\ParseController@getETFInfo')->name('get.etf.info');
 });
