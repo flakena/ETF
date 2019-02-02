@@ -4,7 +4,8 @@
     <list default="true" id="d14a369c-c077-41c0-bd6b-1dc0a312ecf7" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/ETF/ParseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/ETF/ParseController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Helpers/functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Helpers/functions.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/ETF.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/ETF.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_02_01_115158_e_t_f_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_02_01_115158_e_t_f_table.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -39,7 +40,7 @@
       <file leaf-file-name="HomeController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Http/Controllers/HomeController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
+            <state relative-caret-position="225">
               <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="25" />
               <folding>
                 <element signature="e#40#68#0#PHP" expanded="true" />
@@ -69,8 +70,8 @@
       <file leaf-file-name="ParseController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/Http/Controllers/ETF/ParseController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="166">
-              <caret line="67" column="78" selection-start-line="67" selection-start-column="78" selection-end-line="67" selection-end-column="78" />
+            <state relative-caret-position="605">
+              <caret line="53" column="41" selection-start-line="53" selection-start-column="41" selection-end-line="53" selection-end-column="41" />
               <folding>
                 <element signature="e#44#63#0#PHP" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
@@ -79,10 +80,28 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="2019_02_01_115158_e_t_f_table.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/database/migrations/2019_02_01_115158_e_t_f_table.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="15" column="28" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ETF.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/Models/ETF.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="15" column="6" lean-forward="true" selection-start-line="15" selection-start-column="6" selection-end-line="15" selection-end-column="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="functions.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/Http/Helpers/functions.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="243">
+            <state relative-caret-position="255">
               <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
             </state>
           </provider>
@@ -127,12 +146,12 @@
         <option value="$PROJECT_DIR$/resources/views/home.blade.php" />
         <option value="$PROJECT_DIR$/composer.json" />
         <option value="$PROJECT_DIR$/database/migrations/2019_02_01_115510_e_t_f_holdings_table.php" />
-        <option value="$PROJECT_DIR$/app/Models/ETF.php" />
         <option value="$PROJECT_DIR$/app/Http/Controllers/HomeController.php" />
-        <option value="$PROJECT_DIR$/database/migrations/2019_02_01_115158_e_t_f_table.php" />
         <option value="$PROJECT_DIR$/routes/web.php" />
         <option value="$PROJECT_DIR$/config/etf.php" />
         <option value="$PROJECT_DIR$/app/Http/Helpers/functions.php" />
+        <option value="$PROJECT_DIR$/app/Models/ETF.php" />
+        <option value="$PROJECT_DIR$/database/migrations/2019_02_01_115158_e_t_f_table.php" />
         <option value="$PROJECT_DIR$/app/Http/Controllers/ETF/ParseController.php" />
       </list>
     </option>
@@ -265,7 +284,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -338,6 +356,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -377,12 +396,13 @@
       <workItem from="1548936243898" duration="6596000" />
       <workItem from="1548953632529" duration="15000" />
       <workItem from="1549021405266" duration="10276000" />
-      <workItem from="1549052614504" duration="5497000" />
+      <workItem from="1549052614504" duration="5914000" />
+      <workItem from="1549106760707" duration="2227000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="30668000" />
+    <option name="totallyTimeSpent" value="33312000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -392,11 +412,11 @@
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="npm" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="7" visible="true" weight="0.32969698" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32969698" />
       <window_info anchor="right" id="Remote Host" order="3" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2746781" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27825466" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -716,24 +736,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/Models/ETF.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="18" selection-start-line="18" selection-start-column="18" selection-end-line="18" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/database/migrations/2019_02_01_115510_e_t_f_holdings_table.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
           <caret line="25" column="7" selection-start-line="25" selection-start-column="7" selection-end-line="25" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/database/migrations/2019_02_01_115158_e_t_f_table.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="19" column="36" selection-start-line="19" selection-start-column="36" selection-end-line="19" selection-end-column="36" />
         </state>
       </provider>
     </entry>
@@ -760,14 +766,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Helpers/functions.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
+        <state relative-caret-position="255">
           <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Controllers/HomeController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
+        <state relative-caret-position="225">
           <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="25" />
           <folding>
             <element signature="e#40#68#0#PHP" expanded="true" />
@@ -775,10 +781,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/Models/ETF.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="6" lean-forward="true" selection-start-line="15" selection-start-column="6" selection-end-line="15" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/database/migrations/2019_02_01_115158_e_t_f_table.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="15" column="28" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Controllers/ETF/ParseController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="166">
-          <caret line="67" column="78" selection-start-line="67" selection-start-column="78" selection-end-line="67" selection-end-column="78" />
+        <state relative-caret-position="605">
+          <caret line="53" column="41" selection-start-line="53" selection-start-column="41" selection-end-line="53" selection-end-column="41" />
           <folding>
             <element signature="e#44#63#0#PHP" expanded="true" />
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />

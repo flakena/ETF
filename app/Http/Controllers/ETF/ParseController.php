@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ETF;
 use App\Models\ETF;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class ParseController extends Controller
 {
@@ -43,11 +44,16 @@ class ParseController extends Controller
         $dom = new \DOMDocument('1.0');
         @$dom->loadHTML(htmlspecialchars_decode($this->etfIndexHtml));
         $xpath = new \DOMXPath($dom);
-        $etfs = $xpath->query('//tr[@class="fund"]/td[@class="f_ticker"]');
-        if ($etfs) {
-            foreach ($etfs as $etf) {
-//                $arr = $this->getETFInfo($etf->nodeValue);
-//                $ETF->create(['name' => $etf->nodeValue]);
+        $etfSymbols = $xpath->query('//tr[@class="fund"]/td[@class="f_ticker"]');
+        if ($etfSymbols) {
+            foreach ($etfSymbols as $symbol) {
+                $arr = ['symbol' => $symbol->nodeValue];
+                $validator = Validator::make($arr, [
+                    'symbol' => 'required|max:6|unique:etfs'
+                ]);
+                if (!$validator->fails()) {
+                    $ETF->create($arr);
+                }
             }
         }
     }
@@ -64,15 +70,16 @@ class ParseController extends Controller
         $sectorsArr = [];
 
         $this->getPermissionCookies();
-        //ak chatvale eg linkia gaparsuli
-        $this->getCurrentETF(config('etf.parseLinks')['currentETFLink'] . 'CWI');
+        $this->getCurrentETF(config('etf.parseLinks')['currentETFLink'] . 'SPTM');
         $dom = new \DOMDocument('1.0');
-        //ak dabrunebuli html i ra ro amovigo ragaceebi
         @$dom->loadHTML(html_entity_decode($this->etfInfo));
         $xpath = new \DOMXPath($dom);
 
-        //akedan vigeb mag yleobas mara zustad egre ar mibrunebs
-        $sectorWeights = $xpath->query('//div[@id="chart_SectorsAllocChart"]/following-sibling::div[@style="display: none"]');
+        $etfName = $xpath->query('//h1');
+        $etfInfo = $xpath->query('//div[@class="keyfeatures"]');
+        $etfHoldingsLabels = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="label"]');
+        $etfHoldingsWeights = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="weight"]');
+        $etfSectors = $xpath->query('//div[@id="holdings"][1]/descendant::table[last()]//td');
 
         $html = $this->etfInfo;
         $xml = get_string_between($html, '<div style="display: none">', '</div>');
@@ -86,62 +93,57 @@ class ParseController extends Controller
                     $arr[] = $xmlArray;
                 }
             }
-        }
-        dump($arr);
-        die();
 
-        //        $etfName = $xpath->query('//h1');
-//        $etfInfo = $xpath->query('//div[@class="keyfeatures"]');
-//        [//td[@class="data"] and //td[@class="label"] and //td[@class="weight"]]
-//        $etfHoldingsLabels = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="label"]');
-//        $etfHoldingsWeights = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="weight"]');
-//        $etfSectors = $xpath->query('//div[@id="holdings"][1]/descendant::table[last()]//td');
-        $tmpSectArr = [];
-        if ($etfSectors) {
-            $i = 1;
-            foreach ($etfSectors as $sector) {
-                $tmpSectArr += [$i => str_replace('%', '', $sector->nodeValue)];
-                $i++;
+
+            $tmpSectArr = [];
+            if ($etfSectors) {
+                $i = 1;
+                foreach ($etfSectors as $sector) {
+                    $tmpSectArr += [$i => str_replace('%', '', $sector->nodeValue)];
+                    $i++;
+                }
             }
-        }
 
 
-        for ($i = 1; $i <= count($tmpSectArr); $i++) {
-            if ($i % 2 == 0) {
-                $sectorsArr += [$tmpSectArr[$i - 1] => $tmpSectArr[$i]];
+            for ($i = 1; $i <= count($tmpSectArr); $i++) {
+                if ($i % 2 == 0) {
+                    $sectorsArr += [$tmpSectArr[$i - 1] => $tmpSectArr[$i]];
+                }
             }
-        }
 
 
-        if ($etfName) {
-            $etfArr += ['name' => trim($etfName[0]->nodeValue)];
-        }
-        if ($etfInfo) {
-            $etfArr += ['description' => trim($etfInfo[0]->nodeValue)];
-        }
-        if ($etfHoldingsWeights) {
-            $i = 1;
-            foreach ($etfHoldingsWeights as $weight) {
-                $weightArr += [$i => str_replace('%', '', $weight->nodeValue)];
-                $i++;
+            if ($etfName) {
+                $etfArr += ['name' => trim($etfName[0]->nodeValue)];
             }
-        }
-
-        if ($etfHoldingsLabels) {
-            $i = 1;
-            foreach ($etfHoldingsLabels as $label) {
-                $holdings += [$label->nodeValue => [
-                    'name' => $label->nodeValue,
-                    'weight' => $weightArr[$i]
-                ]];
-                $i++;
+            if ($etfInfo) {
+                $etfArr += ['description' => trim($etfInfo[0]->nodeValue)];
             }
+            if ($etfHoldingsWeights) {
+                $i = 1;
+                foreach ($etfHoldingsWeights as $weight) {
+                    $weightArr += [$i => str_replace('%', '', $weight->nodeValue)];
+                    $i++;
+                }
+            }
+
+            if ($etfHoldingsLabels) {
+                $i = 1;
+                foreach ($etfHoldingsLabels as $label) {
+                    $holdings += [$label->nodeValue => [
+                        'name' => $label->nodeValue,
+                        'weight' => $weightArr[$i]
+                    ]];
+                    $i++;
+                }
+            }
+            dump($etfInfo[0]->nodeValue);
+            dump($etfName[0]->nodeValue);
+            dump($arr);
+            dump($sectorsArr);
+
         }
-//        dump($holdings);
-//        dump($sectorsArr);
 
     }
-
 
     /**
      * @param $url
