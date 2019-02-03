@@ -24,6 +24,7 @@ window.Vue = require('vue');
 Vue.component('app-component', require('./components/AppComponent.vue').default);
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('chart-component', require('./components/ChartComponent.vue').default);
+Vue.component('log-component', require('./components/LogComponent.vue').default);
 Vue.component('search-component', require('./components/SearchComponent.vue').default);
 
 

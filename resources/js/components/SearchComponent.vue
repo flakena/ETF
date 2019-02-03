@@ -12,9 +12,6 @@
                                v-model="searchText"
                                aria-describedby="basic-addon1">
                     </div>
-                    <div class="form-group">
-                        <button type="submit">Search</button>
-                    </div>
                 </div>
                 <div class="suggestions" v-if="suggestionsOpen">
                     <ul>
@@ -66,6 +63,7 @@
         .suggestions {
             position: absolute;
             background: #fff;
+            z-index: 99999;
             border: 1px solid #ddd;
             width: calc(100% - 2.50rem);
             ul {

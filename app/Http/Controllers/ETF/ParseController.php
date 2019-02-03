@@ -54,6 +54,12 @@ class ParseController extends Controller
     public function parseCurrentEtf($id)
     {
         $ETF = ETF::where('id', $id)->with(['holdings', 'countryWeights', 'sectorWeights'])->first();
+        activity()
+            ->causedBy(auth()->user()->id)
+            ->performedOn($ETF)
+            ->withProperties(['IP' => getRealIp()])
+            ->log($ETF->symbol.' : '.$ETF->name);
+
         if ($ETF->holdings()->count() && $ETF->countryWeights()->count() && $ETF->sectorWeights()->count()) {
             return $ETF;
         }

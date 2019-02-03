@@ -4,7 +4,7 @@
             <div class="card-header">{{title}}</div>
             <div class="card-body table-outer">
                 <div class="table-container">
-                    <table>
+                    <table class="table table-bordered">
                         <thead>
                         <tr>
                             <th>Name</th>
@@ -81,7 +81,7 @@
                 })
             },
             colors: function () {
-                return this.data.map(function() {
+                return this.data.map(function () {
                     var r = Math.floor(Math.random() * 255);
                     var g = Math.floor(Math.random() * 255);
                     var b = Math.floor(Math.random() * 255);
@@ -93,31 +93,31 @@
 </script>
 
 <style lang="scss" scoped>
-    .pie-chart{
+    .pie-chart {
         margin-top: 25px;
     }
-    .table-outer{
+
+    .table-outer {
         display: flex;
-        .table-container{
+        .table-container {
             width: 50%;
-            table{
+            table {
                 width: 100%;
-                thead{
-                    th{
-                        &:first-of-type{
+                thead {
+                    th {
+                        &:first-of-type {
                             width: 80%;
                         }
-                        &:last-of-type{
+                        &:last-of-type {
                             width: 20%;
                         }
                     }
                 }
             }
         }
-        .canvas-container{
-            width: 40%;
-            margin-left: 10%;
-            canvas{
+        .canvas-container {
+            width: 50%;
+            canvas {
                 flex: 1;
             }
         }

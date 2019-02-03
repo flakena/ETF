@@ -5,5 +5,6 @@
 @push('script')
     <script>
         window.etfs = '{!! Cache::get('etfs') !!}';
+        window.userLogs = '{!! $userLogs !!}';
     </script>
 @endpush

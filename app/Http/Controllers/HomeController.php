@@ -7,6 +7,7 @@ use App\Models\ETF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Spatie\Activitylog\Models\Activity;
 use Symfony\Component\DomCrawler\Crawler;
 
 class HomeController extends Controller
@@ -34,12 +35,15 @@ class HomeController extends Controller
         }
         //remember etfs for autocomplete
         Cache::remember('etfs', 20, function () {
-            return ETF::select('id','name','symbol')->get();
+            return ETF::select('id', 'name', 'symbol')->get();
         });
-
-        return view('home');
-
+        //remember user logs
+        $userLogs = Activity::select('description', 'created_at')
+            ->where('subject_type', 'App\Models\ETF')
+            ->where('causer_id', auth()->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return view('home', compact('userLogs'));
     }
-
 
 }
