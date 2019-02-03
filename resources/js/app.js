@@ -22,6 +22,7 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('app-component', require('./components/AppComponent.vue').default);
+Vue.component('loader-component', require('./components/LoaderComponent.vue').default);
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('chart-component', require('./components/ChartComponent.vue').default);
 Vue.component('log-component', require('./components/LogComponent.vue').default);

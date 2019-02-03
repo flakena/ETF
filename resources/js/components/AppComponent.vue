@@ -3,15 +3,16 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <search-component @parsed="requestReturned"/>
-                <log-component :logs="logs"/>
+
+                <chart-component title="Holdings" componentId="holdings" v-if="ETF" :data="ETF.holdings"
+                                 chartType="horizontalBar"/>
                 <chart-component title="Country Weights" componentId="country-charts" v-if="ETF"
                                  :data="ETF.country_weights"
                                  nameField="name"/>
-                <chart-component title="Holdings" componentId="holdings" v-if="ETF" :data="ETF.holdings"
-                                 chartType="horizontalBar"/>
                 <chart-component title="Sector Weights" componentId="sector-charts" v-if="ETF"
                                  :data="ETF.sector_weights"
                                  nameField="label"/>
+                <log-component :logs="logs"/>
             </div>
         </div>
     </div>

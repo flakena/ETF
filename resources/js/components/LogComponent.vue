@@ -28,8 +28,6 @@
                 type: Array,
                 default: () => []
             }
-        },
-        mounted: function () {
         }
     }
 </script>
@@ -41,6 +39,7 @@
             .table-container {
                 width: 100%;
                 table {
+                    overflow-y: auto;
                     width: 100%;
                     thead {
                         th {
