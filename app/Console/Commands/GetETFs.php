@@ -43,7 +43,7 @@ class GetETFs extends Command
         try {
             $cookies = getPermissionCookies();
             $url = config('etf.seamFile');
-            $response = parseETFs($url, $cookies);
+            $response = parseETF($url, $cookies);
             $dom = new \DOMDocument('1.0');
             @$dom->loadHTML(htmlspecialchars_decode($response));
             $xpath = new \DOMXPath($dom);

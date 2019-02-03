@@ -17,7 +17,6 @@ class ETFTable extends Migration
             $table->increments('id');
             $table->string('name')->nullable();
             $table->longText('description')->nullable();
-            $table->longText('content')->nullable();
             $table->string('symbol')->unique();
             $table->timestamps();
         });

@@ -21,5 +21,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/parse/etf', 'ETF\ParseController@index')->name('etf.parse');
-    Route::get('/get/etf/info', 'ETF\ParseController@getETFInfo')->name('get.etf.info');
+    Route::get('/get/etf/{id}', 'ETF\ParseController@parseCurrentEtf')->name('get.etf.info');
 });

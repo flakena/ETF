@@ -90,7 +90,7 @@ if (!function_exists('parseETFs')) {
      * @param $cookies
      * @return mixed
      */
-    function parseETFs($url, $cookies)
+    function parseETF($url, $cookies)
     {
         $curl = curl_init();
         $curlOpts = array(

@@ -48,199 +48,108 @@ class ParseController extends Controller
 
 
     /**
-     * @param $etf
+     * @param ETF $ETF
+     * @return ETF|array
      */
-    public function getETFInfo($etf)
+    public function parseCurrentEtf($id)
     {
-        $etfArr = [];
-        $holdings = [];
-        $weightArr = [];
-        $sectorsArr = [];
+        $ETF = ETF::where('id', $id)->with(['holdings', 'countryWeights', 'sectorWeights'])->first();
+        if ($ETF->holdings()->count() && $ETF->countryWeights()->count() && $ETF->sectorWeights()->count()) {
+            return $ETF;
+        }
+        $cookies = getPermissionCookies();
+        $url = config('etf.currentETFLink') . $ETF->symbol;
+        $html = parseETF($url, $cookies);
 
         $dom = new \DOMDocument('1.0');
-        @$dom->loadHTML(html_entity_decode($etf->content));
+        @$dom->loadHTML(html_entity_decode($html));
         $xpath = new \DOMXPath($dom);
+        $cw = $xpath->query('//div[@id="holdings"][1]/descendant::table[last()]//td');
+        $hds = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td');
 
-        //Queries for parsing Current ETF page
-        $etfName = $xpath->query('//h1');
-        $etfInfo = $xpath->query('//div[@class="keyfeatures"]');
-        $etfHoldingsLabels = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="label"]');
-        $etfHoldingsWeights = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="weight"]');
-        $etfSectors = $xpath->query('//div[@id="holdings"][1]/descendant::table[last()]//td');
+        //Set description for ETF
+        if (empty($ETF->description)) {
+            $description = $xpath->query('//div[@class="keyfeatures"]');
+            $ETF->update(['description' => $description[0]->nodeValue]);
+        }
 
-        $html = $this->etfInfo;
-        $xml = get_string_between($html, '<div style="display: none">', '</div>');
+        //Set sector Weights
+        $this->getSectorWeights($html, $ETF);
 
 
-        //Get Sector Weights
-        if ($xml) {
-            foreach ($xml as $string) {
-                $string = html_entity_decode($string);
-                $xmlArray = new \SimpleXMLElement($string);
-                if ($xmlArray->code == 'FUND_SECTOR_ALLOCATION') {
-                    foreach ($xmlArray->attributes as $value) {
-                        foreach ($value as $item) {
-                            $etf->sectorWeights()->create([
-                                'label' => $item->label,
-                                'weight' => $item->rawValue,
-                                'order' => $item->order,
-                            ]);
+        //Set Country Weights for ETF
+        $this->getCountryWeights($cw, $ETF);
+
+        //Set Holdings for ETF
+        $this->getHoldings($hds, $ETF);
+
+        return $ETF->load(['holdings', 'countryWeights', 'sectorWeights']);
+    }
+
+    /**
+     * @param $html
+     * @param $ETF
+     */
+    private function getSectorWeights($html, $ETF)
+    {
+        if (!$ETF->sectorWeights()->count()) {
+            $xml = get_string_between($html, '<div style="display: none">', '</div>');
+            if ($xml) {
+                foreach ($xml as $string) {
+                    $string = html_entity_decode($string);
+                    $xmlArray = new \SimpleXMLElement($string);
+                    if ($xmlArray->code == 'FUND_SECTOR_ALLOCATION') {
+                        foreach ($xmlArray->attributes as $value) {
+                            foreach ($value as $item) {
+                                $ETF->sectorWeights()->create([
+                                    'label' => $item->label,
+                                    'weight' => $item->rawValue,
+                                    'order' => $item->order,
+                                ]);
+                            }
                         }
                     }
                 }
             }
         }
-
-        //Get ETF country weight
-        $tmpCountryWeightsArr = [];
-        if ($etfSectors) {
-            $i = 1;
-            foreach ($etfSectors as $sector) {
-                $tmpCountryWeightsArr += [$i => str_replace('%', '', $sector->nodeValue)];
-                $i++;
-            }
-        }
-
-        for ($i = 1; $i <= count($tmpCountryWeightsArr); $i++) {
-            if ($i % 2 == 0) {
-                $etf->countryWeights()->create(
-                    [
-                        'name' => $tmpCountryWeightsArr[$i - 1],
-                        'weight' => $tmpCountryWeightsArr[$i]
-                    ]);
-            }
-        }
-
-        if ($etfHoldingsWeights) {
-            $i = 1;
-            foreach ($etfHoldingsWeights as $weight) {
-                $weightArr += [$i => str_replace('%', '', $weight->nodeValue)];
-                $i++;
-            }
-        }
-
-        if ($etfHoldingsLabels) {
-            $i = 1;
-            foreach ($etfHoldingsLabels as $label) {
-                $etf->holdings()->create(
-                    [
-                        'name' => $label->nodeValue,
-                        'weight' => $weightArr[$i]
-                    ]);
-                $i++;
-            }
-        }
-        //Get ETF Name
-
-        if (count($etfName)) {
-            $etfArr += ['name' => trim($etfName[0]->nodeValue)];
-        }
-
-        //Get ETF Description
-        if (count($etfInfo)) {
-            $etfArr += ['description' => trim($etfInfo[0]->nodeValue)];
-        }
-
-        $etf->update($etfArr);
-
     }
-    private function getHtmlContent($url)
+
+    /**
+     * @param $cw
+     * @param $ETF
+     */
+    private function getCountryWeights($cw, $ETF)
     {
-        $curl = curl_init();
-        $curlOpts = array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_VERBOSE => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_POSTFIELDS => "",
-            CURLOPT_COOKIESESSION => 96,
-            CURLOPT_HTTPHEADER => array_merge(array(
-                "cache-control: no-cache"
-            ), $this->brCookies),
-        );
-        curl_setopt_array($curl, $curlOpts);
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            echo "cURL Error :" . $err;
-        } else {
-            return $response;
+        if (!$ETF->countryWeights()->count()) {
+            if ($cw) {
+                for ($i = 0; $i < $cw->length; $i += 2) {
+                    $ETF->countryWeights()->create(
+                        [
+                            'name' => $cw[$i]->nodeValue,
+                            'weight' => str_replace('%', '', $cw[$i + 1]->nodeValue)
+                        ]);
+                }
+            }
         }
     }
 
     /**
-     * @param $url
+     * @param $cw
+     * @param $ETF
      */
-    private function getCurrentETF($url)
+    private function getHoldings($cw, $ETF)
     {
-        $curl = curl_init();
-        $curlOpts = array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_VERBOSE => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_POSTFIELDS => "",
-            CURLOPT_COOKIESESSION => 96,
-            CURLOPT_HTTPHEADER => array_merge(array(
-                "cache-control: no-cache"
-            ), $this->brCookies),
-        );
-        curl_setopt_array($curl, $curlOpts);
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            echo "cURL Error :" . $err;
-        } else {
-            $this->etfInfo = $response;
+        if (!$ETF->holdings()->count()) {
+            if ($cw) {
+                for ($i = 0; $i < $cw->length; $i += 3) {
+                    $ETF->holdings()->create(
+                        [
+                            'name' => $cw[$i]->nodeValue,
+                            'weight' => str_replace('%', '', $cw[$i + 1]->nodeValue)
+                        ]);
+                }
+            }
         }
     }
-
-    /**
-     * @param $url
-     * @return mixed
-     */
-    private function parseETFs($url)
-    {
-        $curl = curl_init();
-        $curlOpts = array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_VERBOSE => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_POSTFIELDS => "",
-            CURLOPT_COOKIESESSION => 96,
-            CURLOPT_HTTPHEADER => array_merge(array(
-                "cache-control: no-cache"
-            ), $this->brCookies),
-        );
-        curl_setopt_array($curl, $curlOpts);
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            echo "cURL Error :" . $err;
-        } else {
-            $this->etfIndexHtml = $response;
-        }
-    }
-
-
 
 }
