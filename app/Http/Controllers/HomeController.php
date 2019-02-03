@@ -3,16 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\DomCrawler\Crawler;
 
 class HomeController extends Controller
 {
-    /**
-     * Var for storing all the cookies returned from parsed website
-     *
-     * @var array
-     */
-    private $brCookies = array();
 
     /**
      * Create a new controller instance.
@@ -31,9 +26,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-//        $this->getPermissionCookies();
-//        $this->parseETFs($this->seamFile);
-
+        if (!config('etf.parsed')) {
+            Artisan::call('etf:get');
+        }
         return view('home');
     }
 

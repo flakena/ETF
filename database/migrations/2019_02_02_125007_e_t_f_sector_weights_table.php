@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ETFTable extends Migration
+class ETFSectorWeightsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class ETFTable extends Migration
      */
     public function up()
     {
-        Schema::create('etfs', function (Blueprint $table) {
+        Schema::create('etf_sector_weights', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->nullable();
-            $table->longText('description')->nullable();
-            $table->longText('content')->nullable();
-            $table->string('symbol')->unique();
+            $table->string('label');
+            $table->string('weight');
+            $table->tinyInteger('order');
+            $table->unsignedInteger('etf_id')->nullable();
+            $table->foreign('etf_id')->references('id')->on('etfs')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ class ETFTable extends Migration
      */
     public function down()
     {
-        Schema::drop('etfs');
+        Schema::drop('etf_sector_weights');
     }
 }

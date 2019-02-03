@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\ETF;
 
 use App\Models\ETF;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 class ParseController extends Controller
@@ -34,47 +36,32 @@ class ParseController extends Controller
     private $etfHoldings = '';
 
     /**
-     *
+     * @param ETF $ETF
      */
     public function index(ETF $ETF)
     {
-        $this->getPermissionCookies();
-        $this->parseETFs(config('etf.parseLinks')['seamFile']);
 
-        $dom = new \DOMDocument('1.0');
-        @$dom->loadHTML(htmlspecialchars_decode($this->etfIndexHtml));
-        $xpath = new \DOMXPath($dom);
-        $etfSymbols = $xpath->query('//tr[@class="fund"]/td[@class="f_ticker"]');
-        if ($etfSymbols) {
-            foreach ($etfSymbols as $symbol) {
-                $arr = ['symbol' => $symbol->nodeValue];
-                $validator = Validator::make($arr, [
-                    'symbol' => 'required|max:6|unique:etfs'
-                ]);
-                if (!$validator->fails()) {
-                    $ETF->create($arr);
-                }
-            }
-        }
+
+        //(Cache::get('ETFCookie') != null) ? Cache::get('ETFCookie') :
+
     }
 
 
     /**
-     *
+     * @param $etf
      */
-    public function getETFInfo()
+    public function getETFInfo($etf)
     {
         $etfArr = [];
         $holdings = [];
         $weightArr = [];
         $sectorsArr = [];
 
-        $this->getPermissionCookies();
-        $this->getCurrentETF(config('etf.parseLinks')['currentETFLink'] . 'SPTM');
         $dom = new \DOMDocument('1.0');
-        @$dom->loadHTML(html_entity_decode($this->etfInfo));
+        @$dom->loadHTML(html_entity_decode($etf->content));
         $xpath = new \DOMXPath($dom);
 
+        //Queries for parsing Current ETF page
         $etfName = $xpath->query('//h1');
         $etfInfo = $xpath->query('//div[@class="keyfeatures"]');
         $etfHoldingsLabels = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="label"]');
@@ -84,65 +71,107 @@ class ParseController extends Controller
         $html = $this->etfInfo;
         $xml = get_string_between($html, '<div style="display: none">', '</div>');
 
-        $arr = [];
+
+        //Get Sector Weights
         if ($xml) {
             foreach ($xml as $string) {
                 $string = html_entity_decode($string);
                 $xmlArray = new \SimpleXMLElement($string);
                 if ($xmlArray->code == 'FUND_SECTOR_ALLOCATION') {
-                    $arr[] = $xmlArray;
+                    foreach ($xmlArray->attributes as $value) {
+                        foreach ($value as $item) {
+                            $etf->sectorWeights()->create([
+                                'label' => $item->label,
+                                'weight' => $item->rawValue,
+                                'order' => $item->order,
+                            ]);
+                        }
+                    }
                 }
             }
-
-
-            $tmpSectArr = [];
-            if ($etfSectors) {
-                $i = 1;
-                foreach ($etfSectors as $sector) {
-                    $tmpSectArr += [$i => str_replace('%', '', $sector->nodeValue)];
-                    $i++;
-                }
-            }
-
-
-            for ($i = 1; $i <= count($tmpSectArr); $i++) {
-                if ($i % 2 == 0) {
-                    $sectorsArr += [$tmpSectArr[$i - 1] => $tmpSectArr[$i]];
-                }
-            }
-
-
-            if ($etfName) {
-                $etfArr += ['name' => trim($etfName[0]->nodeValue)];
-            }
-            if ($etfInfo) {
-                $etfArr += ['description' => trim($etfInfo[0]->nodeValue)];
-            }
-            if ($etfHoldingsWeights) {
-                $i = 1;
-                foreach ($etfHoldingsWeights as $weight) {
-                    $weightArr += [$i => str_replace('%', '', $weight->nodeValue)];
-                    $i++;
-                }
-            }
-
-            if ($etfHoldingsLabels) {
-                $i = 1;
-                foreach ($etfHoldingsLabels as $label) {
-                    $holdings += [$label->nodeValue => [
-                        'name' => $label->nodeValue,
-                        'weight' => $weightArr[$i]
-                    ]];
-                    $i++;
-                }
-            }
-            dump($etfInfo[0]->nodeValue);
-            dump($etfName[0]->nodeValue);
-            dump($arr);
-            dump($sectorsArr);
-
         }
 
+        //Get ETF country weight
+        $tmpCountryWeightsArr = [];
+        if ($etfSectors) {
+            $i = 1;
+            foreach ($etfSectors as $sector) {
+                $tmpCountryWeightsArr += [$i => str_replace('%', '', $sector->nodeValue)];
+                $i++;
+            }
+        }
+
+        for ($i = 1; $i <= count($tmpCountryWeightsArr); $i++) {
+            if ($i % 2 == 0) {
+                $etf->countryWeights()->create(
+                    [
+                        'name' => $tmpCountryWeightsArr[$i - 1],
+                        'weight' => $tmpCountryWeightsArr[$i]
+                    ]);
+            }
+        }
+
+        if ($etfHoldingsWeights) {
+            $i = 1;
+            foreach ($etfHoldingsWeights as $weight) {
+                $weightArr += [$i => str_replace('%', '', $weight->nodeValue)];
+                $i++;
+            }
+        }
+
+        if ($etfHoldingsLabels) {
+            $i = 1;
+            foreach ($etfHoldingsLabels as $label) {
+                $etf->holdings()->create(
+                    [
+                        'name' => $label->nodeValue,
+                        'weight' => $weightArr[$i]
+                    ]);
+                $i++;
+            }
+        }
+        //Get ETF Name
+
+        if (count($etfName)) {
+            $etfArr += ['name' => trim($etfName[0]->nodeValue)];
+        }
+
+        //Get ETF Description
+        if (count($etfInfo)) {
+            $etfArr += ['description' => trim($etfInfo[0]->nodeValue)];
+        }
+
+        $etf->update($etfArr);
+
+    }
+    private function getHtmlContent($url)
+    {
+        $curl = curl_init();
+        $curlOpts = array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_VERBOSE => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_POSTFIELDS => "",
+            CURLOPT_COOKIESESSION => 96,
+            CURLOPT_HTTPHEADER => array_merge(array(
+                "cache-control: no-cache"
+            ), $this->brCookies),
+        );
+        curl_setopt_array($curl, $curlOpts);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            echo "cURL Error :" . $err;
+        } else {
+            return $response;
+        }
     }
 
     /**
@@ -176,40 +205,13 @@ class ParseController extends Controller
         } else {
             $this->etfInfo = $response;
         }
-        $curl = curl_init();
-        $curlOpts = array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_VERBOSE => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_POSTFIELDS => "",
-            CURLOPT_COOKIESESSION => 96,
-            CURLOPT_HTTPHEADER => array_merge(array(
-                "cache-control: no-cache"
-            ), $this->brCookies),
-        );
-        curl_setopt_array($curl, $curlOpts);
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            echo "cURL Error :" . $err;
-        } else {
-            $this->etfInfo = $response;
-        }
     }
 
     /**
      * @param $url
      * @return mixed
      */
-    private
-    function parseETFs($url)
+    private function parseETFs($url)
     {
         $curl = curl_init();
         $curlOpts = array(
@@ -239,44 +241,6 @@ class ParseController extends Controller
         }
     }
 
-    /**
-     *
-     */
-    private
-    function getPermissionCookies()
-    {
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => config('etf.parseLinks')['locationForm'],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HEADER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => ""
-        ));
 
-        $response = curl_exec($curl);
-        $this->getCookies($response);
-        curl_close($curl);
-    }
-
-    /**
-     * @param $result
-     */
-    private
-    function getCookies($result)
-    {
-        preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $result, $matches);
-        $cookies = array();
-        foreach ($matches[1] as $item) {
-            $item = 'Cookie: ' . $item;
-            array_push($cookies, $item);
-        }
-        $this->brCookies = array_merge($this->brCookies, $cookies);
-    }
 
 }
