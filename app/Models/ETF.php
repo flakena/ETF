@@ -12,7 +12,7 @@ class ETF extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'symbol','content'
+        'name', 'description', 'symbol'
     ];
 
     /**

@@ -48,8 +48,8 @@ class ParseController extends Controller
 
 
     /**
-     * @param ETF $ETF
-     * @return ETF|array
+     * @param $id
+     * @return mixed
      */
     public function parseCurrentEtf($id)
     {
