@@ -70601,7 +70601,7 @@ var render = function() {
               })
             : _vm._e(),
           _vm._v(" "),
-          _vm.ETF
+          _vm.ETF && _vm.ETF.holdings.length
             ? _c("chart-component", {
                 attrs: {
                   title: "Holdings",
@@ -70612,7 +70612,7 @@ var render = function() {
               })
             : _vm._e(),
           _vm._v(" "),
-          _vm.ETF
+          _vm.ETF && _vm.ETF.country_weights.length
             ? _c("chart-component", {
                 attrs: {
                   title: "Country Weights",
@@ -70623,7 +70623,7 @@ var render = function() {
               })
             : _vm._e(),
           _vm._v(" "),
-          _vm.ETF
+          _vm.ETF && _vm.ETF.sector_weights.length
             ? _c("chart-component", {
                 attrs: {
                   title: "Sector Weights",

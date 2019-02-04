@@ -14,7 +14,6 @@ This project is for parsing etf's  from website [spdrs.com](www.spdrs.com).
 - Fill out Database configuration fields with correct *Host*, *username* and *password*
 
 ### Startup commands :
-	-  $ php artisan key:generate 
 	-  $ php cache:clear
 	-  $ php artisan config:cache
 	-  $ php artisan migrate

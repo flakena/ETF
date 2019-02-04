@@ -4,12 +4,12 @@
             <div class="col-md-12">
                 <search-component @parsed="requestReturned"/>
                 <e-t-f-component v-if="ETF" :symbol="ETF.symbol" :name="ETF.name" :description="ETF.description"/>
-                <chart-component title="Holdings" componentId="holdings" v-if="ETF" :data="ETF.holdings"
+                <chart-component title="Holdings" componentId="holdings" v-if="ETF && ETF.holdings.length" :data="ETF.holdings"
                                  chartType="horizontalBar"/>
-                <chart-component title="Country Weights" componentId="country-charts" v-if="ETF"
+                <chart-component title="Country Weights" componentId="country-charts" v-if="ETF && ETF.country_weights.length"
                                  :data="ETF.country_weights"
                                  nameField="name"/>
-                <chart-component title="Sector Weights" componentId="sector-charts" v-if="ETF"
+                <chart-component title="Sector Weights" componentId="sector-charts" v-if="ETF && ETF.sector_weights.length"
                                  :data="ETF.sector_weights"
                                  nameField="label"/>
                 <log-component :logs="logs"/>
@@ -30,7 +30,7 @@
         methods: {
             requestReturned: function (data) {
                 if (data) {
-                    this.ETF = data
+                    this.ETF = data;
                     var now = new Date();
                     this.logs.unshift({
                         description: this.ETF.symbol + ' : ' + this.ETF.name,
