@@ -52,14 +52,14 @@ if (!function_exists('getPermissionCookies')) {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HEADER => true,
             CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 50,
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_NOBODY => true,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => ""
         ));
-
         $response = curl_exec($curl);
         curl_close($curl);
         return getCookies($response);
@@ -79,9 +79,7 @@ if (!function_exists('getCookies')) {
             $item = 'Cookie: ' . $item;
             array_push($cookies, $item);
         }
-        return  Cache::remember('etfCookies', 60, function () use($cookies) {
-            return $cookies;
-        });
+        return $cookies;
     }
 
 }
@@ -98,9 +96,8 @@ if (!function_exists('parseETFs')) {
         $curlOpts = array(
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_VERBOSE => true,
             CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 50,
+            CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,

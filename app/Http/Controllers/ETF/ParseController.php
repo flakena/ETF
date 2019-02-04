@@ -25,35 +25,38 @@ class ParseController extends Controller
         if ($ETF->holdings()->count() && $ETF->countryWeights()->count() && $ETF->sectorWeights()->count()) {
             return $ETF;
         }
-        $cookies = Cache::get('etf_cookies') == null ? getPermissionCookies() : Cache::get('etf_cookies');
+        $cookies = getPermissionCookies();
         if ($cookies) {
             $url = config('etf.currentETFLink') . $ETF->symbol;
             $html = parseETF($url, $cookies);
+            if ($html) {
+                $dom = new \DOMDocument('1.0');
+                @$dom->loadHTML(html_entity_decode($html));
+                $xpath = new \DOMXPath($dom);
+                $cwNames = $xpath->query('//h2[normalize-space(text()) = "Fund Country Weights"]//following-sibling::table[1]//td[@class="label"]');
+                $cwWeights = $xpath->query('//h2[normalize-space(text()) = "Fund Country Weights"]//following-sibling::table[1]//td[@class="data"]');
+                $hdsNames = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="label"]');
+                $hdsWeights = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td[@class="weight"]');
 
-            $dom = new \DOMDocument('1.0');
-            @$dom->loadHTML(html_entity_decode($html));
-            $xpath = new \DOMXPath($dom);
-            $cw = $xpath->query('//div[@id="holdings"][1]/descendant::table[last()]//td');
-            $hds = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td');
-
-            //Set description for ETF
-            if (empty($ETF->description)) {
-                $description = $xpath->query('//div[@class="keyfeatures"]');
-                if ($description->length) {
-                    $ETF->update(['description' => $description[0]->nodeValue]);
+                //Set description for ETF
+                if (empty($ETF->description)) {
+                    $description = $xpath->query('//div[@class="keyfeatures"]');
+                    if ($description->length) {
+                        $ETF->update(['description' => $description[0]->nodeValue]);
+                    }
                 }
+
+                //Set sector Weights
+                $this->getSectorWeights($html, $ETF);
+
+
+                //Set Country Weights for ETF
+                $this->getCountryWeights($cwNames,$cwWeights, $ETF);
+
+                //Set Holdings for ETF
+                $this->getHoldings($hdsNames,$hdsWeights, $ETF);
+
             }
-
-            //Set sector Weights
-            $this->getSectorWeights($html, $ETF);
-
-
-            //Set Country Weights for ETF
-            $this->getCountryWeights($cw, $ETF);
-
-            //Set Holdings for ETF
-            $this->getHoldings($hds, $ETF);
-
             return $ETF->load(['holdings', 'countryWeights', 'sectorWeights']);
         }
     }
@@ -87,18 +90,19 @@ class ParseController extends Controller
     }
 
     /**
-     * @param $cw
+     * @param $cwNames
+     * @param $cwWeights
      * @param $ETF
      */
-    private function getCountryWeights($cw, $ETF)
+    private function getCountryWeights($cwNames,$cwWeights, $ETF)
     {
         if (!$ETF->countryWeights()->count()) {
-            if ($cw) {
-                for ($i = 0; $i < $cw->length; $i += 2) {
+            if ($cwNames) {
+                for ($i = 0; $i < $cwNames->length; $i++) {
                     $ETF->countryWeights()->create(
                         [
-                            'name' => $cw[$i]->nodeValue,
-                            'weight' => str_replace('%', '', $cw[$i + 1]->nodeValue)
+                            'name' => $cwNames[$i]->nodeValue,
+                            'weight' => str_replace('%', '', $cwWeights[$i]->nodeValue)
                         ]);
                 }
             }
@@ -106,18 +110,19 @@ class ParseController extends Controller
     }
 
     /**
-     * @param $cw
+     * @param $hdsNames
+     * @param $hdsWeights
      * @param $ETF
      */
-    private function getHoldings($cw, $ETF)
+    private function getHoldings($hdsNames,$hdsWeights, $ETF)
     {
         if (!$ETF->holdings()->count()) {
-            if ($cw) {
-                for ($i = 0; $i < $cw->length; $i += 3) {
+            if ($hdsNames) {
+                for ($i = 0; $i < $hdsNames->length; $i++) {
                     $ETF->holdings()->create(
                         [
-                            'name' => $cw[$i]->nodeValue,
-                            'weight' => str_replace('%', '', $cw[$i + 1]->nodeValue)
+                            'name' => $hdsNames[$i]->nodeValue,
+                            'weight' => str_replace('%', '', $hdsWeights[$i]->nodeValue)
                         ]);
                 }
             }
