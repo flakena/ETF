@@ -3,49 +3,10 @@
 namespace App\Http\Controllers\ETF;
 
 use App\Models\ETF;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
 
 class ParseController extends Controller
 {
-    /**
-     * Var for storing all the cookies returned from parsed website
-     *
-     * @var array
-     */
-    private $brCookies = [];
-
-    /**
-     * Var for storing etf index html response from parsed website
-     * @var string
-     */
-    private $etfIndexHtml = '';
-
-    /**
-     * Var for storing etf information from parsed website
-     * @var string
-     */
-    private $etfInfo = '';
-
-    /**
-     * @var string
-     */
-    private $etfHoldings = '';
-
-    /**
-     * @param ETF $ETF
-     */
-    public function index(ETF $ETF)
-    {
-
-
-        //(Cache::get('ETFCookie') != null) ? Cache::get('ETFCookie') :
-
-    }
-
 
     /**
      * @param $id

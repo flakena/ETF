@@ -1,16 +1,24 @@
 <template>
     <div class="jumbotron">
-        <h1>{{data.symbol}} : {{data.name}}</h1>
-        <p class="text-justify">{{data.description}}</p>
+        <h1>{{symbol}} : {{name}}</h1>
+        <p class="text-justify">{{description}}</p>
     </div>
 </template>
 
 <script>
     export default {
         props: {
-            data: {
-                type: Array,
-                default: () => []
+            symbol: {
+                type: String,
+                default: ''
+            },
+            name: {
+                type: String,
+                default: ''
+            },
+            description : {
+                type: String,
+                default: ''
             }
         }
     }

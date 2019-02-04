@@ -3,7 +3,7 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <search-component @parsed="requestReturned"/>
-                <e-t-f-component v-if="ETF" :data="ETF"/>
+                <e-t-f-component v-if="ETF" :symbol="ETF.symbol" :name="ETF.name" :description="ETF.description"/>
                 <chart-component title="Holdings" componentId="holdings" v-if="ETF" :data="ETF.holdings"
                                  chartType="horizontalBar"/>
                 <chart-component title="Country Weights" componentId="country-charts" v-if="ETF"

@@ -1897,7 +1897,6 @@ __webpack_require__.r(__webpack_exports__);
     labels: function labels() {
       var _this = this;
 
-      console.log(this.nameField);
       return this.data.map(function (item) {
         return item[_this.nameField];
       });
@@ -1938,11 +1937,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
-    data: {
-      type: Array,
-      default: function _default() {
-        return [];
-      }
+    symbol: {
+      type: String,
+      default: ''
+    },
+    name: {
+      type: String,
+      default: ''
+    },
+    description: {
+      type: String,
+      default: ''
     }
   }
 });
@@ -70586,7 +70591,13 @@ var render = function() {
           _c("search-component", { on: { parsed: _vm.requestReturned } }),
           _vm._v(" "),
           _vm.ETF
-            ? _c("e-t-f-component", { attrs: { data: _vm.ETF } })
+            ? _c("e-t-f-component", {
+                attrs: {
+                  symbol: _vm.ETF.symbol,
+                  name: _vm.ETF.name,
+                  description: _vm.ETF.description
+                }
+              })
             : _vm._e(),
           _vm._v(" "),
           _vm.ETF
@@ -70719,11 +70730,9 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "jumbotron" }, [
-    _c("h1", [_vm._v(_vm._s(_vm.data.symbol) + " : " + _vm._s(_vm.data.name))]),
+    _c("h1", [_vm._v(_vm._s(_vm.symbol) + " : " + _vm._s(_vm.name))]),
     _vm._v(" "),
-    _c("p", { staticClass: "text-justify" }, [
-      _vm._v(_vm._s(_vm.data.description))
-    ])
+    _c("p", { staticClass: "text-justify" }, [_vm._v(_vm._s(_vm.description))])
   ])
 }
 var staticRenderFns = []

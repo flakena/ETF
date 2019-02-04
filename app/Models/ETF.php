@@ -11,9 +11,7 @@ class ETF extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'name', 'description', 'symbol'
-    ];
+    protected $fillable = ['name', 'description', 'symbol'];
 
     /**
      * @var string

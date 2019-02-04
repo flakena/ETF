@@ -70,7 +70,6 @@
         },
         computed: {
             labels: function () {
-                console.log(this.nameField);
                 return this.data.map(item => {
                     return item[this.nameField];
                 })

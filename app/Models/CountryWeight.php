@@ -11,10 +11,7 @@ class CountryWeight extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'name', 'weight'
-    ];
-
+    protected $fillable = ['name', 'weight'];
     /**
      * @var string
      */

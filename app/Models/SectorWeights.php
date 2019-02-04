@@ -11,9 +11,7 @@ class SectorWeights extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'label', 'weight','order'
-    ];
+    protected $fillable = ['label', 'weight','order'];
 
     /**
      * @var string

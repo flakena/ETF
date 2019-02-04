@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ETFResource;
 use App\Models\ETF;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Spatie\Activitylog\Models\Activity;
-use Symfony\Component\DomCrawler\Crawler;
 
 class HomeController extends Controller
 {
@@ -33,11 +30,11 @@ class HomeController extends Controller
         if (!config('etf.parsed')) {
             Artisan::call('etf:get');
         }
-        //remember etfs for autocomplete
+        //Remember ETF's list for autocomplete
         Cache::remember('etfs', 20, function () {
             return ETF::select('id', 'name', 'symbol')->get();
         });
-        //remember user logs
+        //Get user search logs
         $userLogs = Activity::select('description', 'created_at')
             ->where('subject_type', 'App\Models\ETF')
             ->where('causer_id', auth()->user()->id)
