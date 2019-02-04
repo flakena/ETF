@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ETF;
 
 use App\Models\ETF;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 
 class ParseController extends Controller
 {
@@ -19,38 +20,42 @@ class ParseController extends Controller
             ->causedBy(auth()->user()->id)
             ->performedOn($ETF)
             ->withProperties(['IP' => getRealIp()])
-            ->log($ETF->symbol.' : '.$ETF->name);
+            ->log($ETF->symbol . ' : ' . $ETF->name);
 
         if ($ETF->holdings()->count() && $ETF->countryWeights()->count() && $ETF->sectorWeights()->count()) {
             return $ETF;
         }
-        $cookies = getPermissionCookies();
-        $url = config('etf.currentETFLink') . $ETF->symbol;
-        $html = parseETF($url, $cookies);
+        $cookies = Cache::get('etf_cookies') == null ? getPermissionCookies() : Cache::get('etf_cookies');
+        if ($cookies) {
+            $url = config('etf.currentETFLink') . $ETF->symbol;
+            $html = parseETF($url, $cookies);
 
-        $dom = new \DOMDocument('1.0');
-        @$dom->loadHTML(html_entity_decode($html));
-        $xpath = new \DOMXPath($dom);
-        $cw = $xpath->query('//div[@id="holdings"][1]/descendant::table[last()]//td');
-        $hds = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td');
+            $dom = new \DOMDocument('1.0');
+            @$dom->loadHTML(html_entity_decode($html));
+            $xpath = new \DOMXPath($dom);
+            $cw = $xpath->query('//div[@id="holdings"][1]/descendant::table[last()]//td');
+            $hds = $xpath->query('//div[@class="col-xs-12 col-sm-6 top-holdings"][1]/descendant::table[1]//td');
 
-        //Set description for ETF
-        if (empty($ETF->description)) {
-            $description = $xpath->query('//div[@class="keyfeatures"]');
-            $ETF->update(['description' => $description[0]->nodeValue]);
+            //Set description for ETF
+            if (empty($ETF->description)) {
+                $description = $xpath->query('//div[@class="keyfeatures"]');
+                if ($description->length) {
+                    $ETF->update(['description' => $description[0]->nodeValue]);
+                }
+            }
+
+            //Set sector Weights
+            $this->getSectorWeights($html, $ETF);
+
+
+            //Set Country Weights for ETF
+            $this->getCountryWeights($cw, $ETF);
+
+            //Set Holdings for ETF
+            $this->getHoldings($hds, $ETF);
+
+            return $ETF->load(['holdings', 'countryWeights', 'sectorWeights']);
         }
-
-        //Set sector Weights
-        $this->getSectorWeights($html, $ETF);
-
-
-        //Set Country Weights for ETF
-        $this->getCountryWeights($cw, $ETF);
-
-        //Set Holdings for ETF
-        $this->getHoldings($hds, $ETF);
-
-        return $ETF->load(['holdings', 'countryWeights', 'sectorWeights']);
     }
 
     /**

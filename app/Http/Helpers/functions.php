@@ -79,7 +79,9 @@ if (!function_exists('getCookies')) {
             $item = 'Cookie: ' . $item;
             array_push($cookies, $item);
         }
-        return $cookies;
+        return  Cache::remember('etfCookies', 60, function () use($cookies) {
+            return $cookies;
+        });
     }
 
 }
