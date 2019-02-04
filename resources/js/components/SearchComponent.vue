@@ -1,7 +1,8 @@
 <template>
     <div id="search-component">
         <div class="card">
-            <div class="card-header">Dashboard</div>
+            <loader-component v-if="open"></loader-component>
+            <div class="card-header">Search ETF</div>
             <div class="card-body">
                 <div class="search-wrapper">
                     <div class="input-group">
@@ -32,6 +33,7 @@
         data: function () {
             return {
                 searchText: '',
+                open: false
             }
         },
         computed: {
@@ -48,9 +50,11 @@
         },
         methods: {
             getEtf: function (item) {
+                this.open = true;
+                this.searchText = '';
                 axios.get('/get/etf/' + item.id).then(res => {
                     this.$emit('parsed', res.data);
-                    this.searchText = '';
+                    this.open = false;
                     return res;
                 }).catch(error => console.error(error));
             }
