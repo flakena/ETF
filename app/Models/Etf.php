@@ -13,8 +13,6 @@ class Etf extends Model
      */
     protected $fillable = ['name', 'description', 'symbol'];
 
-
-
     /*
      * Relations
      */

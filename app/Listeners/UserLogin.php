@@ -30,7 +30,7 @@ class UserLogin
         $user = $event->user;
         activity()
             ->causedBy($user)
-            ->withProperties(['IP' => getRealIp()])
+            ->withProperties(['IP' => \Request::ip()])
             ->log('Successfully logged in.');
     }
 }

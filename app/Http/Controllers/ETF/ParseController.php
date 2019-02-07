@@ -19,12 +19,13 @@ class ParseController extends Controller
         activity()
             ->causedBy(auth()->user()->id)
             ->performedOn($ETF)
-            ->withProperties(['IP' => getRealIp()])
+            ->withProperties(['IP' => \Request::ip()])
             ->log($ETF->symbol . ' : ' . $ETF->name);
 
         if ($ETF->holdings()->count() && $ETF->countryWeights()->count() && $ETF->sectorWeights()->count()) {
             return $ETF;
         }
+
         $cookies = getPermissionCookies();
         if ($cookies) {
             $url = config('etf.currentETFLink') . $ETF->symbol;
