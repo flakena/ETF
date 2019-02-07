@@ -27,7 +27,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if (!config('etf.parsed')) {
+        if (empty(Cache::get('parsed'))) {
             Artisan::call('etf:get');
         }
         //Remember ETF's list for autocomplete

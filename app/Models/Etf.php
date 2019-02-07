@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ETF extends Model
+class Etf extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -12,11 +12,6 @@ class ETF extends Model
      * @var array
      */
     protected $fillable = ['name', 'description', 'symbol'];
-
-    /**
-     * @var string
-     */
-    protected $table = 'etfs';
 
 
 
@@ -28,20 +23,20 @@ class ETF extends Model
      */
     public function sectorWeights()
     {
-        return $this->hasMany(SectorWeights::class,'etf_id');
+        return $this->hasMany(SectorWeights::class);
     }
     /**
      * Get the comments for the blog post.
      */
     public function holdings()
     {
-        return $this->hasMany(Holdings::class,'etf_id');
+        return $this->hasMany(Holdings::class);
     }
     /**
      * Get the comments for the blog post.
      */
     public function countryWeights()
     {
-        return $this->hasMany(CountryWeight::class,'etf_id');
+        return $this->hasMany(CountryWeight::class);
     }
 }
