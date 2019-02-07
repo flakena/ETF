@@ -27,7 +27,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        get_string_between('jemalilaligurammi','jemali','gurammi');
         if (empty(Cache::get('parsed'))) {
             Artisan::call('etf:get');
         }
