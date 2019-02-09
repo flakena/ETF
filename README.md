@@ -6,12 +6,14 @@ This project is for parsing etf's  from website [spdrs.com](www.spdrs.com).
     - Sector weights  
 ## Installation:
 
-	- Download git repository or just clone it  
-	- Create .env file in root directory (find *project/.env.example) 
-	- Set configurations
+- Download git repository or just clone it  
+- Create .env file in root directory (find *project/.env.example) 
+    ```php
+      cp .env.example .env
+      php artisan key:generate
+- Fill out Database configuration fields with correct *Host*, *username* and *password*
 
 ### Startup commands :
-	-  $ php artisan key:generate 
 	-  $ php cache:clear
 	-  $ php artisan config:cache
 	-  $ php artisan migrate
