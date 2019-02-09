@@ -12,9 +12,4 @@ class Holdings extends Model
      * @var array
      */
     protected $fillable = ['name', 'weight'];
-
-    /**
-     * @var string
-     */
-    protected $table = 'etf_holdings';
 }

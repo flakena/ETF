@@ -12,10 +12,4 @@ class SectorWeights extends Model
      * @var array
      */
     protected $fillable = ['label', 'weight','order'];
-
-    /**
-     * @var string
-     */
-    protected $table = 'etf_sector_weights';
-
 }

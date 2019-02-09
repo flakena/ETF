@@ -12,9 +12,4 @@ class CountryWeight extends Model
      * @var array
      */
     protected $fillable = ['name', 'weight'];
-    /**
-     * @var string
-     */
-    protected $table = 'etf_country_weights';
-
 }

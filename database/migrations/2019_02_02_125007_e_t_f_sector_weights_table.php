@@ -13,7 +13,7 @@ class ETFSectorWeightsTable extends Migration
      */
     public function up()
     {
-        Schema::create('etf_sector_weights', function (Blueprint $table) {
+        Schema::create('sector_weights', function (Blueprint $table) {
             $table->increments('id');
             $table->string('label');
             $table->string('weight');
@@ -31,6 +31,6 @@ class ETFSectorWeightsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('etf_sector_weights');
+        Schema::drop('sector_weights');
     }
 }

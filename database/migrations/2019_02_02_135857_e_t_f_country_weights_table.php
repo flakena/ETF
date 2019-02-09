@@ -13,7 +13,7 @@ class ETFCountryWeightsTable extends Migration
      */
     public function up()
     {
-        Schema::create('etf_country_weights', function (Blueprint $table) {
+        Schema::create('country_weights', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('weight');
@@ -30,6 +30,6 @@ class ETFCountryWeightsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('etf_country_weights');
+        Schema::drop('country_weights');
     }
 }

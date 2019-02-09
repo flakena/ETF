@@ -13,7 +13,7 @@ class ETFHoldingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('etf_holdings', function (Blueprint $table) {
+        Schema::create('holdings', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('weight');
@@ -30,6 +30,6 @@ class ETFHoldingsTable extends Migration
      */
     public function down()
     {
-       Schema::drop('etf_holdings');
+       Schema::drop('holdings');
     }
 }
