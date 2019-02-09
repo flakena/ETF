@@ -17,7 +17,16 @@ This project is for parsing etf's  from website [spdrs.com](www.spdrs.com).
     -  $ php composer.phar / composer install
 	-  $ php artisan key:generate 
 	-  $ php artisan config:cache
-	-  $ php artisan migrate
 ##### NPM (not installed):
 	- npm install
 	- npm run build
+##### Database:
+	-  $ php artisan migrate
+	or you could import already existing backup file under */database/backups
+	
+##### Usage: 
+    - $ php artisan serve
+    
+Now app is available on [127.0.0.1:8000](https://127.0.0.1:8000)
+    
+   
