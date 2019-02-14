@@ -2,9 +2,9 @@
 
 namespace App\Listeners;
 
-use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 
-class UserLogin
+class UserLogout
 {
     /**
      * Create the event listener.
@@ -17,18 +17,15 @@ class UserLogin
     }
 
     /**
-     * @param Login $event
+     * @param Logout $event
      */
-    public function handle(Login $event)
+    public function handle(Logout $event)
     {
         $user = $event->user;
-        $message = $user->username.' logged in successfully.';
-
+        $message = $user->username . ' logged out from system.';
         activity()
             ->causedBy($user)
             ->withProperties(['IP' => \Request::ip()])
             ->log($message);
-
-        flash($message)->success();
     }
 }

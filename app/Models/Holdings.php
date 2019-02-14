@@ -12,4 +12,13 @@ class Holdings extends Model
      * @var array
      */
     protected $fillable = ['name', 'weight'];
+
+    /**
+     * @param $value
+     * @return float
+     */
+    public function getWeightAttribute($value)
+    {
+        return round($value,2);
+    }
 }

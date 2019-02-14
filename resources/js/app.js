@@ -27,6 +27,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('chart-component', require('./components/ChartComponent.vue').default);
 Vue.component('log-component', require('./components/LogComponent.vue').default);
 Vue.component('search-component', require('./components/SearchComponent.vue').default);
+Vue.component('error-component', require('./components/ErrorComponent.vue').default);
 
 
 /**
@@ -38,3 +39,13 @@ Vue.component('search-component', require('./components/SearchComponent.vue').de
 const app = new Vue({
     el: '#app'
 });
+
+
+$.fn.hideMessages = function(){
+    let _this = $(this);
+    setTimeout(function(){
+        _this.remove();
+    },3000);
+}
+
+$('.hide-alert').hideMessages();

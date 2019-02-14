@@ -9,6 +9,7 @@
                 <chart-component title="Country Weights" componentId="country-charts" v-if="ETF && ETF.country_weights.length"
                                  :data="ETF.country_weights"
                                  nameField="name"/>
+                <error-component v-if="ETF && !ETF.country_weights.length" ></error-component>
                 <chart-component title="Sector Weights" componentId="sector-charts" v-if="ETF && ETF.sector_weights.length"
                                  :data="ETF.sector_weights"
                                  nameField="label"/>

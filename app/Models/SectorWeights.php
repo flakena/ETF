@@ -11,5 +11,14 @@ class SectorWeights extends Model
      *
      * @var array
      */
-    protected $fillable = ['label', 'weight','order'];
+    protected $fillable = ['label', 'weight', 'order'];
+
+    /**
+     * @param $value
+     * @return float
+     */
+    public function getWeightAttribute($value)
+    {
+        return round($value, 2);
+    }
 }

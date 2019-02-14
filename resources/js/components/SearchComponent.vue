@@ -24,6 +24,11 @@
                         </li>
                     </ul>
                 </div>
+                <div class="flash-message" v-if="!suggestions.length">
+                    <div class="alert alert-danger" >
+                        For keyword :  <strong>{{searchText}}</strong>  information is not available.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -33,7 +38,7 @@
         data: function () {
             return {
                 searchText: '',
-                open: false
+                open: false,
             }
         },
         computed: {
@@ -52,6 +57,7 @@
             getEtf: function (item) {
                 this.open = true;
                 this.searchText = '';
+                this.filterError = false;
                 axios.get('/get/etf/' + item.id).then(res => {
                     this.$emit('parsed', res.data);
                     this.open = false;
@@ -75,12 +81,17 @@
                 padding-left: 0;
                 max-height: 400px;
                 overflow-y: auto;
+                margin-bottom: 0px;
                 li {
                     color: #000;
                     a {
                         cursor: pointer;
                         display: block;
                         padding: 12px 20px;
+                    }
+                    &:hover{
+                        font-weight: bold;
+                        background: #ccc;
                     }
                 }
             }
