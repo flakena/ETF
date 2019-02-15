@@ -3,7 +3,7 @@
         <loader-component v-if="open" loaderClass="jumbutronLoader"></loader-component>
         <h1>{{etf.symbol}} : {{etf.name}}</h1>
         <p class="text-justify">{{etf.description}}</p>
-        <button @click="createPDF">pdf</button>
+        <button class="btn btn-primary" @click="createPDF"><i class="fa fa-file-pdf-o"></i> Export PDF file for {{this.etf.name}} </button>
     </div>
 </template>
 

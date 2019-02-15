@@ -78685,7 +78685,14 @@ var render = function() {
         _vm._v(_vm._s(_vm.etf.description))
       ]),
       _vm._v(" "),
-      _c("button", { on: { click: _vm.createPDF } }, [_vm._v("pdf")])
+      _c(
+        "button",
+        { staticClass: "btn btn-primary", on: { click: _vm.createPDF } },
+        [
+          _c("i", { staticClass: "fa fa-file-pdf-o" }),
+          _vm._v(" Export PDF file for " + _vm._s(this.etf.name) + " ")
+        ]
+      )
     ],
     1
   )
