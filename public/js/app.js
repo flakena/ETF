@@ -2259,6 +2259,7 @@ __webpack_require__.r(__webpack_exports__);
     submit: function submit(value) {
       var _this2 = this;
 
+      this.$emit('nullify');
       this.open = true;
       this.hideClass = true;
       this.hasError = false;
@@ -2278,6 +2279,7 @@ __webpack_require__.r(__webpack_exports__);
         _this2.hideClass = false;
         _this2.hasError = true;
         _this2.errorText = _this2.searchText;
+        _this2.searchText = '';
       });
     }
   }
@@ -78516,7 +78518,14 @@ var render = function() {
         "div",
         { staticClass: "col-md-12" },
         [
-          _c("search-component", { on: { parsed: _vm.requestReturned } }),
+          _c("search-component", {
+            on: {
+              parsed: _vm.requestReturned,
+              nullify: function($event) {
+                _vm.ETF = null
+              }
+            }
+          }),
           _vm._v(" "),
           _vm.ETF
             ? _c("e-t-f-component", { attrs: { etf: _vm.ETF } })

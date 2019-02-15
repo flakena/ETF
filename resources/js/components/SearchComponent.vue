@@ -72,6 +72,7 @@
                 return this.metaTitle;
             },
             submit: function (value) {
+                this.$emit('nullify');
                 this.open = true;
                 this.hideClass = true;
                 this.hasError = false;
@@ -90,6 +91,7 @@
                     this.hideClass = false;
                     this.hasError = true;
                     this.errorText = this.searchText;
+                    this.searchText = '';
                 });
             }
         }

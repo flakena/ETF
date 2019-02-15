@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
-                <search-component @parsed="requestReturned"/>
+                <search-component @parsed="requestReturned" @nullify="ETF = null"/>
                 <e-t-f-component v-if="ETF" :etf="ETF"/>
                 <chart-component title="Holdings" componentId="holdings" v-if="ETF && ETF.holdings.length" :data="ETF.holdings"
                                  chartType="horizontalBar"/>
