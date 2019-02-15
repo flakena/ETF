@@ -1863,6 +1863,10 @@ __webpack_require__.r(__webpack_exports__);
         return [];
       }
     },
+    cardId: {
+      type: String,
+      default: ''
+    },
     componentId: {
       type: String,
       default: 'SingleChart'
@@ -1979,52 +1983,32 @@ __webpack_require__.r(__webpack_exports__);
 
       this.open = true;
       var filename = this.etf.symbol + ' ' + this.etf.name;
-      var pdf = new jspdf__WEBPACK_IMPORTED_MODULE_0___default.a('p', 'mm', 'a4');
-      pdf.setFontSize(20);
-      pdf.text(this.etf.name, 105, 20, null, null, 'center');
-      pdf.setFontSize(13);
-      pdf.text(pdf.splitTextToSize(this.etf.description, 180), 105, 35, null, null, 'center');
-      html2canvas__WEBPACK_IMPORTED_MODULE_1___default()(document.querySelector('#holdings')).then(function (canvas) {
-        pdf.setFontSize(20);
-        pdf.addPage('1', 'a4');
-        pdf.text('Top 10 Holdings Table', 105, 20, null, null, 'center');
-        pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 5, 35, 200, 200);
-        html2canvas__WEBPACK_IMPORTED_MODULE_1___default()(document.querySelector('#holdings-table')).then(function (canvas) {
-          pdf.addPage('2', 'a4');
-          pdf.text('Top 10 Holdings Chart', 105, 20, null, null, 'center');
-          pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 5, 30, 200, 200);
-          html2canvas__WEBPACK_IMPORTED_MODULE_1___default()(document.querySelector('#sector-charts-table')).then(function (canvas) {
-            pdf.addPage('3', 'a4');
-            pdf.text('Sector Weights Table', 105, 20, null, null, 'center');
-            pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 5, 30, 200, 200);
-            html2canvas__WEBPACK_IMPORTED_MODULE_1___default()(document.querySelector('#sector-charts')).then(function (canvas) {
-              pdf.addPage('4', 'a4');
-              pdf.text('Sector Weights Chart', 105, 20, null, null, 'center');
-              pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 5, 30, 200, 200);
-              var countryWeightsTable = document.querySelector('#country-charts-table');
-              var countryWeightsCharts = document.querySelector('#country-charts');
-
-              if (countryWeightsTable) {
-                html2canvas__WEBPACK_IMPORTED_MODULE_1___default()(countryWeightsCharts).then(function (canvas) {
-                  pdf.addPage('5', 'a4');
-                  pdf.text('Country Weights Chart', 105, 20, null, null, 'center');
-                  pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 5, 30, 200, 200);
-                  html2canvas__WEBPACK_IMPORTED_MODULE_1___default()(countryWeightsTable).then(function (canvas) {
-                    pdf.addPage('6', 'a4');
-                    pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 5, 5, 200, canvas.height / 8);
-                    _this.open = false;
-                    pdf.save(filename);
-                  });
-                });
-              }
-
-              if (!countryWeightsTable) {
-                _this.open = false;
-                pdf.save(filename);
-              }
-            });
-          });
-        });
+      var pdf = new jspdf__WEBPACK_IMPORTED_MODULE_0___default.a('landscape');
+      pdf.setFontSize(45);
+      pdf.text(this.etf.symbol + ' : ' + this.etf.name, 10, 30, null, null, 'left');
+      pdf.setFontSize(14);
+      pdf.text(pdf.splitTextToSize(this.etf.description, 110), 10, 55, null, null, 'left');
+      var url = 'https://www.spdrs.com/product/fund.seam?ticker=' + this.etf.symbol + '';
+      var rectX = 10,
+          rectY = 165,
+          rectW = 70,
+          rectH = 15;
+      pdf.setDrawColor(0);
+      pdf.setFillColor(2, 126, 1);
+      pdf.rect(rectX, rectY, rectW, rectH, 'F');
+      pdf.link(rectX, rectY, rectW, rectH, {
+        url: url
+      });
+      pdf.setTextColor(255, 255, 255);
+      pdf.textWithLink('Official ' + this.etf.symbol + ' page', 25, 174, {
+        url: url
+      });
+      html2canvas__WEBPACK_IMPORTED_MODULE_1___default()(document.querySelector('#topHoldings')).then(function (canvas) {
+        var imgWidth = canvas.width * 17 / 240;
+        var imgHeight = canvas.height * 17 / 240;
+        pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 130, 50, imgWidth, imgHeight);
+        _this.open = false;
+        pdf.save(filename);
       });
     }
   }
@@ -78535,6 +78519,7 @@ var render = function() {
             ? _c("chart-component", {
                 attrs: {
                   title: "Holdings",
+                  cardId: "topHoldings",
                   componentId: "holdings",
                   data: _vm.ETF.holdings,
                   chartType: "horizontalBar"
@@ -78546,6 +78531,7 @@ var render = function() {
             ? _c("chart-component", {
                 attrs: {
                   title: "Country Weights",
+                  cardId: "countryWeights",
                   componentId: "country-charts",
                   data: _vm.ETF.country_weights,
                   nameField: "name"
@@ -78562,6 +78548,7 @@ var render = function() {
                 attrs: {
                   title: "Sector Weights",
                   componentId: "sector-charts",
+                  cardId: "sectorWeights",
                   data: _vm.ETF.sector_weights,
                   nameField: "label"
                 }
@@ -78598,7 +78585,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "pie-chart" }, [
-    _c("div", { staticClass: "card" }, [
+    _c("div", { staticClass: "card", attrs: { id: _vm.cardId } }, [
       _c("div", { staticClass: "card-header" }, [_vm._v(_vm._s(_vm.title))]),
       _vm._v(" "),
       _c(

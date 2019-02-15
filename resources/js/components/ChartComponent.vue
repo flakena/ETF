@@ -1,6 +1,6 @@
 <template>
     <div class="pie-chart">
-        <div class="card">
+        <div class="card" :id="cardId">
             <div class="card-header">{{title}}</div>
             <div class="card-body table-outer" :id="`${componentId}-component`">
                 <div class="table-container">
@@ -36,6 +36,10 @@
             data: {
                 type: Array,
                 default: () => []
+            },
+            cardId: {
+                type: String,
+                default: ''
             },
             componentId: {
                 type: String,
