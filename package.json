@@ -27,6 +27,10 @@
     "dependencies": {
         "chart.js": "^2.7.3",
         "font-awesome": "^4.7.0",
-        "vue-loading-spinner": "^1.0.11"
+        "html2canvas": "^1.0.0-alpha.12",
+        "jspdf": "^1.5.3",
+        "vue-headful": "^2.0.1",
+        "vue-loading-spinner": "^1.0.11",
+        "vue-meta": "^1.5.8"
     }
 }

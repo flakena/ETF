@@ -21,6 +21,10 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
+import Meta from 'vue-meta';
+
+Vue.use(Meta);
+
 Vue.component('app-component', require('./components/AppComponent.vue').default);
 Vue.component('loader-component', require('./components/LoaderComponent.vue').default);
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
@@ -44,7 +48,7 @@ const app = new Vue({
 $.fn.hideMessages = function(){
     let _this = $(this);
     setTimeout(function(){
-        _this.remove();
+        _this.fadeOut();
     },3000);
 }
 

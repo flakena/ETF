@@ -5,28 +5,33 @@
             <div class="card-header">Search ETF</div>
             <div class="card-body">
                 <div class="search-wrapper">
-                    <div class="input-group">
+                    <form @submit.prevent="submit">
+                        <div class="input-group">
                             <span class="input-group-addon" id="basic-addon1">
                                 <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
                             </span>
-                        <input type="text" class="form-control" name="sybmol" placeholder="Type ETF symbol"
-                               v-model="searchText"
-                               aria-describedby="basic-addon1">
-                    </div>
+                            <input type="text" class="form-control" name="sybmol" placeholder="Type ETF symbol"
+                                   v-model="searchText"
+                                   aria-describedby="basic-addon1">
+                        </div>
+                        <button type="submit" class="btn btn-primary" :class="{'display-none' : hideClass} ">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </form>
                 </div>
-                <div class="suggestions" v-if="suggestionsOpen">
+                <div class="suggestions" v-if="suggestionsOpen" :class="{'display-none' : hideClass}">
                     <ul>
                         <li v-for="(value, index) in suggestions" :key="index">
-                            <a @click="getEtf(value)">
+                            <a @click="submit(value)">
                                 <span class="name">{{value.name}}</span>
                                 <span class="symbol"> {{value.symbol}}</span>
                             </a>
                         </li>
                     </ul>
                 </div>
-                <div class="flash-message" v-if="!suggestions.length">
-                    <div class="alert alert-danger" >
-                        For keyword :  <strong>{{searchText}}</strong>  information is not available.
+                <div class="flash-message" v-if="hasError">
+                    <div class="alert alert-danger">
+                        For keyword : <strong>{{errorText}}</strong> information is not available.
                     </div>
                 </div>
             </div>
@@ -39,6 +44,15 @@
             return {
                 searchText: '',
                 open: false,
+                hasError: false,
+                metaTitle: 'ETF | ETF parser',
+                errorText: '',
+                hideClass: false
+            }
+        },
+        metaInfo() {
+            return {
+                title: this.getMetaTitle()
             }
         },
         computed: {
@@ -54,15 +68,29 @@
             }
         },
         methods: {
-            getEtf: function (item) {
+            getMetaTitle: function () {
+                return this.metaTitle;
+            },
+            submit: function (value) {
                 this.open = true;
-                this.searchText = '';
-                this.filterError = false;
-                axios.get('/get/etf/' + item.id).then(res => {
+                this.hideClass = true;
+                this.hasError = false;
+                const searchValue = value && value.hasOwnProperty('symbol') ? value.symbol : this.searchText;
+                axios.get('/check/etf/' + searchValue).then(res => {
                     this.$emit('parsed', res.data);
                     this.open = false;
+                    this.hasError = false;
+                    this.metaTitle = (res) ? res.data.symbol.toUpperCase() + '| ' + res.data.name : this.searchText.toLocaleUpperCase();
+                    this.hideClass = false;
+                    this.searchText = '';
                     return res;
-                }).catch(error => console.error(error));
+                }).catch(error => {
+                    console.error(error);
+                    this.open = false;
+                    this.hideClass = false;
+                    this.hasError = true;
+                    this.errorText = this.searchText;
+                });
             }
         }
     }
@@ -89,7 +117,7 @@
                         display: block;
                         padding: 12px 20px;
                     }
-                    &:hover{
+                    &:hover {
                         font-weight: bold;
                         background: #ccc;
                     }
@@ -100,22 +128,34 @@
 
     .search-wrapper {
         display: flex;
-        .input-group {
+        form {
             width: 100%;
-            margin: 0;
-            input {
-                border-radius: 0;
+            .input-group {
+                width: 100%;
+                margin: 0;
+                input {
+                    border-radius: 0;
 
+                }
             }
-        }
-        .form-group {
-            flex: 1;
-            margin: 0;
+            .form-group {
+                flex: 1;
+                margin: 0;
+                button {
+                    height: 100%;
+                    border: none;
+                    background: #6EEB83;
+                    color: #ffffff;
+                }
+            }
             button {
-                height: 100%;
-                border: none;
-                background: #6EEB83;
-                color: #ffffff;
+                position: absolute;
+                top: 20px;
+                height: 37px;
+                width: 10%;
+                right: 20px;
+                border-radius: 0px;
+                z-index: 999;
             }
         }
     }

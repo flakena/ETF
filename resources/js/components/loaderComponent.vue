@@ -1,5 +1,5 @@
 <template>
-    <div class="loader">
+    <div class="loader" :class="loaderClass">
         <cube-spin></cube-spin>
     </div>
 </template>
@@ -7,6 +7,12 @@
     import CubeSpin from 'vue-loading-spinner/src/components/Circle'
 
     export default {
+        props:{
+          loaderClass: {
+              type: String,
+              default: ''
+          }
+        },
         components: {
             CubeSpin
         }
@@ -21,5 +27,13 @@
         background: #fff;
         text-align: center;
         padding-top: 40px;
+    }
+    .jumbutronLoader{
+        top: 0;
+        left: 0;
+        div{
+            display: block;
+            margin: 0 auto;
+        }
     }
 </style>

@@ -1,6 +1,6 @@
 <template>
     <div class="flash-message">
-        <div class="alert alert-danger">
+        <div class="alert alert-info">
            {{ message }}
         </div>
     </div>

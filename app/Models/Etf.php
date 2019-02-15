@@ -37,4 +37,15 @@ class Etf extends Model
     {
         return $this->hasMany(CountryWeight::class);
     }
+
+    /**
+     * @param $query
+     * @param $text
+     * @return mixed
+     */
+    public function scopeGetByText($query, $text)
+    {
+        $text = '%'.strtoupper($text).'%';
+        return $query->orWhere('symbol','like',$text)->orWhere('description', $text);
+    }
 }

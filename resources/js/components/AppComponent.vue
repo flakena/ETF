@@ -3,7 +3,7 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <search-component @parsed="requestReturned"/>
-                <e-t-f-component v-if="ETF" :symbol="ETF.symbol" :name="ETF.name" :description="ETF.description"/>
+                <e-t-f-component v-if="ETF" :etf="ETF"/>
                 <chart-component title="Holdings" componentId="holdings" v-if="ETF && ETF.holdings.length" :data="ETF.holdings"
                                  chartType="horizontalBar"/>
                 <chart-component title="Country Weights" componentId="country-charts" v-if="ETF && ETF.country_weights.length"
@@ -20,6 +20,7 @@
 </template>
 <script>
     import ETFComponent from "./ETFComponent";
+
     export default {
         components: {ETFComponent},
         data: function () {

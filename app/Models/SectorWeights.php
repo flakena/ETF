@@ -19,6 +19,6 @@ class SectorWeights extends Model
      */
     public function getWeightAttribute($value)
     {
-        return round($value, 2);
+        return number_format(round($value,2),2);
     }
 }

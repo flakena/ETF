@@ -5,6 +5,8 @@
 @import 'variables';
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+// Font awesome
+@import "~font-awesome/scss/font-awesome";
 
 body {
   background: #fff;
@@ -12,9 +14,11 @@ body {
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   }
-
   .flash-message {
     margin-top: 25px;
+  }
+  .display-none{
+    display: none;
   }
 }
 
