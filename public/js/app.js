@@ -2001,6 +2001,7 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var ctx = document.getElementById(this.pdfChartId);
     var options = {
+      responsive: false,
       tooltips: {
         mode: 'index',
         callbacks: {
@@ -2076,8 +2077,15 @@ __webpack_require__.r(__webpack_exports__);
       this.open = true;
       var filename = this.etf.symbol + ' ' + this.etf.name;
       var pdf = new jspdf__WEBPACK_IMPORTED_MODULE_1___default.a('landscape');
-      pdf.setFontSize(45);
-      pdf.text(this.etf.symbol + ' : ' + this.etf.name, 10, 30, null, null, 'left');
+      var fontSize = 45;
+      var title = this.etf.symbol + ' : ' + this.etf.name;
+      var w = pdf.getStringUnitWidth(title) * fontSize;
+      fontSize = w > 1500 ? 20 : fontSize;
+      fontSize = w > 1390 && w < 1500 ? 22 : fontSize;
+      fontSize = w < 1390 && w > 1000 ? 26 : fontSize;
+      fontSize = w < 1000 && w > 600 ? 24 : fontSize;
+      pdf.setFontSize(fontSize);
+      pdf.text(title, 10, 30, null, null, 'left');
       pdf.setFontSize(12);
       pdf.text(pdf.splitTextToSize(this.etf.description, 275), 10, 45, null, null, 'left');
       var url = 'https://www.spdrs.com/product/fund.seam?ticker=' + this.etf.symbol + '';
@@ -2099,6 +2107,17 @@ __webpack_require__.r(__webpack_exports__);
       html2canvas__WEBPACK_IMPORTED_MODULE_2___default()(el).then(function (canvas) {
         var imgWidth = canvas.width * 18 / 240;
         var imgHeight = canvas.height * 18 / 240;
+        var minWidth = 156.9;
+        var minHeight = 78.45;
+
+        if (imgWidth <= minWidth || imgWidth >= minWidth) {
+          imgWidth = minWidth;
+        }
+
+        if (imgHeight <= minHeight || imgHeight >= minHeight) {
+          imgHeight = minHeight;
+        }
+
         pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 125, 80, imgWidth, imgHeight); //jspdf Autotable
 
         pdf.autoTable({
@@ -22696,7 +22715,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".jumbotron[data-v-3d518211] {\n  margin-top: 25px;\n  overflow: hidden;\n}\n.pdfChart[data-v-3d518211] {\n  position: absolute;\n  top: 100%;\n}", ""]);
+exports.push([module.i, ".jumbotron[data-v-3d518211] {\n  margin-top: 25px;\n  overflow: hidden;\n}\n.pdfChart[data-v-3d518211] {\n  position: absolute;\n  top: -100000px;\n  width: 1046px !important;\n  height: 523px;\n}", ""]);
 
 // exports
 

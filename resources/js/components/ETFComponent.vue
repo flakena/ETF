@@ -49,6 +49,7 @@
             let ctx = document.getElementById(this.pdfChartId);
 
             let options = {
+                responsive : false,
                 tooltips: {
                     mode: 'index',
                     callbacks: {
@@ -126,8 +127,17 @@
                 const filename = this.etf.symbol + ' ' + this.etf.name;
                 const pdf = new jsPDF('landscape');
 
-                pdf.setFontSize(45);
-                pdf.text(this.etf.symbol + ' : ' + this.etf.name, 10, 30, null, null, 'left');
+                let fontSize = 45;
+                let title = this.etf.symbol + ' : ' + this.etf.name;
+                let w = pdf.getStringUnitWidth(title) * fontSize;
+
+                fontSize = w > 1500  ? 20 : fontSize;
+                fontSize = (w > 1390 && w < 1500)  ? 22 : fontSize;
+                fontSize = (w < 1390 && w > 1000)  ? 26 : fontSize;
+                fontSize = (w < 1000 && w > 600)  ? 24 : fontSize;
+
+                pdf.setFontSize(fontSize);
+                pdf.text(title, 10, 30, null, null, 'left');
 
                 pdf.setFontSize(12);
                 pdf.text(pdf.splitTextToSize(this.etf.description, 275), 10, 45, null, null, 'left');
@@ -152,6 +162,18 @@
                 html2canvas(el).then(canvas => {
                     let imgWidth = (canvas.width * 18) / 240;
                     let imgHeight = (canvas.height * 18) / 240;
+
+                    let minWidth = 156.9;
+                    let minHeight = 78.45;
+
+                    if(imgWidth <= minWidth || imgWidth >= minWidth){
+                        imgWidth = minWidth;
+                    }
+
+                    if(imgHeight <= minHeight || imgHeight >= minHeight){
+                        imgHeight = minHeight;
+                    }
+
                     pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 125, 80, imgWidth, imgHeight);
 
                     //jspdf Autotable
@@ -205,6 +227,8 @@
     }
     .pdfChart {
         position: absolute;
-        top: 100%;
+        top: -100000px;
+        width: 1046px !important;
+        height: 523px;
     }
 </style>
